@@ -1,1 +1,94 @@
+def input_digit(text_func, exception_func=None, error_func="Вы ввели не правильные данные! Попробуйте снова."):
+    while True:
+        user_input = input(text_func)
+        for index in range(len(user_input)):
+            if (not user_input[index].isdigit() and user_input[index] != exception_func and
+                    (user_input[index] != "-" or (not user_input[index + (index != len(user_input) - 1)].isdigit()))):
+                print(error_func)
+                print()
+                break
+        else:
+            return user_input
 
+
+def create_matrix(text1_func, text2_func):
+    matrix_func = []
+    while True:
+        rows, cols = int(input_digit(text1_func, " ")), int(input_digit(text2_func, " "))
+        if rows > 0 and cols > 0:
+            break
+        print("Введено значение меньше 1! Попробуйте снова.\n")
+    print()
+
+    for index in range(rows):
+        while True:
+            line = input_digit(f"Введите строку {index + 1} из {rows} строк: ", " ").split()
+            if len(line) == cols:
+                matrix_func.append([int(symbol) for symbol in line])
+                break
+            print(f"Неверное количество элементов! Их должно быть: {cols}\n")
+    print()
+    return matrix_func
+
+
+def sum_matrices(matrix1_func, matrix2_func):
+    rows, cols = len(matrix1_func), len(matrix1_func[0])
+
+    if rows == len(matrix2_func) and cols == len(matrix2_func[0]):
+        return [[matrix1_func[i][j] + matrix2_func[i][j] for j in range(cols)] for i in range(rows)]
+    print("Размерность матриц не одинакова! Попробуйте снова.")
+
+
+def subtraction_matrices(matrix1_func, matrix2_func):
+    rows, cols = len(matrix1_func), len(matrix1_func[0])
+
+    if rows == len(matrix2_func) and cols == len(matrix2_func[0]):
+        return [[matrix1_func[i][j] - matrix2_func[i][j] for j in range(cols)] for i in range(rows)]
+    print("Размерность матриц не одинакова! Попробуйте снова.")
+
+
+def multiplication_matrices(matrix1_func, matrix2_func):
+    matrix1_rows, matrix2_rows = len(matrix1_func), len(matrix2_func)
+
+    if len(matrix1_func[0]) == matrix2_rows:  # "len(matrix1_func[0])" это количество столбцов 1 матрицы
+        return [[sum([matrix2_func[i][fixed_j] * matrix1_func[index][i] for i in range(matrix2_rows)])
+                 for fixed_j in range(matrix1_rows)] for index in range(matrix1_rows)]
+    print("количество столбцов 1 матрицы должны совпадать с количеством строк 2 матрицы! Попробуйте снова.")
+
+
+def transposition_matrices(matrix_func):
+    rows, cols = len(matrix_func), len(matrix_func[0])
+    return [[matrix_func[i][j] for i in range(rows)] for j in range(cols)]
+
+
+def calculation_result():
+    while True:
+        while True:
+            operation = input("Введите желаемую операцию(вычитание, сложение, умножение, транспортирование): ").lower()
+            if operation in ["вычитание", "сложение", "умножение", "транспортирование"]:
+                break
+            print("Введена неизвестная операция! Попробуйте снова.\n")
+
+        matrix1 = create_matrix("Введите количество строк 1 матрицы: ", "Введите количество столбцов 1 матрицы: ")
+
+        if "транспортирование" in operation:
+            result = transposition_matrices(matrix1)
+            if result is None:
+                continue
+            return result
+
+        matrix2 = create_matrix("Введите количество строк 2 матрицы: ", "Введите количество столбцов 2 матрицы: ")
+
+        if "вычитание" in operation:
+            result = subtraction_matrices(matrix1, matrix2)
+        elif "сложение" in operation:
+            result = sum_matrices(matrix1, matrix2)
+        else:
+            result = multiplication_matrices(matrix1, matrix2)
+
+        if result is None:
+            continue
+        return result
+
+
+print(calculation_result())
