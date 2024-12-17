@@ -10,7 +10,7 @@ def input_digit(text_func, exception_func=None, error_func="Вы ввели не
         else:
             return user_input
 
-
+ 
 def create_matrix(text1_func, text2_func):
     matrix_func = []
     while True:
