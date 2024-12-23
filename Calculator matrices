@@ -134,6 +134,7 @@ def calculation_result(matrices_func):
         return result_operation
 
 
+# основная часть кода
 kit_matrices = []
 while True:
     result = calculation_result(kit_matrices)
