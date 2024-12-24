@@ -1,13 +1,17 @@
-def input_digit(text_func, exception_func=None, error_func="Вы ввели не правильные данные! Попробуйте снова."):
+# Функция будет проверять ввод пользователя нет ли символов в строке кроме цифр(от 1 до 9). Можно добавлять исключения!
+def input_digit(text_func, exception_func=(None, ), error_func="Вы ввели не правильные данные! Попробуйте снова."):
+    # Цикл будет работать, пока пользователь не введёт правильные данные.
     while True:
-        user_input = input(text_func)
+        user_input = input(text_func).strip()
+
         if user_input == "":
             print(error_func)
             print()
             continue
 
+        # будем перебирать символы строки, чтобы убедиться, что все они удовлетворяют требования.
         for index in range(len(user_input)):
-            if (not user_input[index].isdigit() and user_input[index] != exception_func and
+            if (not user_input[index].isdigit() and user_input[index] not in exception_func and
                     (user_input[index] != "-" or (not user_input[index + (index != len(user_input) - 1)].isdigit()))):
                 print(error_func)
                 print()
@@ -16,28 +20,35 @@ def input_digit(text_func, exception_func=None, error_func="Вы ввели не
             return user_input
 
 
+# Функция ищущая элемент с максимальным количеством символов. Возвращает количество символов этого элемента.
 def max_element_matrix(matrix_func):
     return max([max([len(str(symbol)) for symbol in line]) for line in matrix_func])
 
 
+# Функция выводит матрицу построчно, выравнивая элементы для читаемости.
 def unpacking_matrix(matrix_func):
-    indentation = max_element_matrix(matrix_func)
+    indentation = max_element_matrix(matrix_func)  # Определяем ширину для выравнивания.
 
     for line in matrix_func:
+        print("|", end="")
         for symbol in line:
-            print(str(symbol).ljust(indentation + 1), end="")
-        print()
+            print(str(symbol).ljust(indentation + 1), end="")  # Выравниваем каждый элемент.
+        print("|")
 
 
+# Функция создаёт матрицу с указанными пользователем размерами.
 def create_matrix(text1_func, text2_func):
     matrix_func = []
+
+    # Запрашиваем у пользователя размеры матрицы.
     while True:
-        rows, cols = int(input_digit(text1_func, " ")), int(input_digit(text2_func, " "))
+        rows, cols = int(input_digit(text1_func)), int(input_digit(text2_func))
         if rows > 0 and cols > 0:
             break
         print("Введено значение меньше 1! Попробуйте снова.\n")
     print()
 
+    # Вводим строки матрицы, проверяя их корректность.
     for index in range(rows):
         while True:
             line = input_digit(f"Введите строку {index + 1} из {rows} строк: ", " ").split()
@@ -49,79 +60,102 @@ def create_matrix(text1_func, text2_func):
     return matrix_func
 
 
+# Функция для складывания 2 матриц.
 def sum_matrices(matrix1_func, matrix2_func):
     rows, cols = len(matrix1_func), len(matrix1_func[0])
 
+    # Проверяем одинаковы ли размерности матриц, если да выполняем алгоритм сложения.
     if rows == len(matrix2_func) and cols == len(matrix2_func[0]):
         return [[matrix1_func[i][j] + matrix2_func[i][j] for j in range(cols)] for i in range(rows)]
     print("Размерность матриц не одинакова! Попробуйте снова.")
 
 
+# Функция для вычитания 2 матриц.
 def subtraction_matrices(matrix1_func, matrix2_func):
     rows, cols = len(matrix1_func), len(matrix1_func[0])
 
+    # Проверяем одинаковы ли размерности матриц, если да выполняем алгоритм сложения.
     if rows == len(matrix2_func) and cols == len(matrix2_func[0]):
         return [[matrix1_func[i][j] - matrix2_func[i][j] for j in range(cols)] for i in range(rows)]
     print("Размерность матриц не одинакова! Попробуйте снова.")
 
 
+# Функция для Умножения 2 матриц.
 def multiplication_matrices(matrix1_func, matrix2_func):
     matrix1_rows, matrix2_rows = len(matrix1_func), len(matrix2_func)
 
+    # Проверяем совпадает ли кол-во столбцов 1 матрицы с кол-вом строк 2 матрицы, если да выполняем алгоритм.
     if len(matrix1_func[0]) == matrix2_rows:
         return [[sum([matrix2_func[i][fixed_j] * matrix1_func[index][i] for i in range(matrix2_rows)])
                  for fixed_j in range(matrix1_rows)] for index in range(matrix1_rows)]
     print("количество столбцов 1 матрицы должны совпадать с количеством строк 2 матрицы! Попробуйте снова.")
 
 
+# Функция для транспортирования матрицы.
 def transposition_matrices(matrix_func):
     rows, cols = len(matrix_func), len(matrix_func[0])
     return [[matrix_func[i][j] for i in range(rows)] for j in range(cols)]
 
 
+# Пользователь должен выбрать способ(ввести или выбрать матрицу).
 def input_matrix(kit_matrices_func, num_input_func):
     count_matrices = len(kit_matrices_func)
+
+    # Проверяем ввод пользователя, является ли он правильным(существует ли способ введённым пользователем).
     while True:
         user_way = input("Вы хотите создать матрицу или выбрать уже существующую? Введите способ(создать, выбрать): ").lower()
         if "выбрать" in user_way or "создать" in user_way:
             break
         print("Ведённый вами способ не существует! Попробуйте снова.\n")
 
+    # Мы предоставим выбор матрицы, если пользователь выбрал этот способ и список матриц не пустой!
     if "выбрать" in user_way and count_matrices:
-        for index_matrix in range(len(kit_matrices_func)):
+        # Распаковка матриц.
+        for index_matrix in range(count_matrices):
+            print(f"\n матрица {index_matrix + 1}:")
             unpacking_matrix(kit_matrices_func[index_matrix])
-            print(f"- - - - - {index_matrix + 1}")
+            print()
+
+        # Проверяем введённый номер пользователя. Существует ли матрица под таким номером.
         while True:
             index = int(input_digit("Введите номер матрицы: "))
             if 0 < index < count_matrices + 1:
                 break
             print("введённого вами номера матрицы не существует! Попробуйте снова.")
+
         return kit_matrices_func[index - 1]
-    else:
+    else:  # Блок кода будет выполняться, если пользователь ввёл способ - "Создать".
+        # Условие выполниться, если этот блок кода сработал не потому, что пользователь ввёл - "создать", а потому,
+        # что список матриц ещё пустой!
         if "выбрать" in user_way:
             print("Вы не можете выбрать матрицу поскольку до этого не было сделана операций! Предлагаем создать её.\n")
         return create_matrix(f"Введите количество строк {num_input_func} матрицы:",
                              f"Введите количество столбцов {num_input_func} матрицы:")
 
 
+# Эта функция считывает результат в зависимости от выбранной пользователем операцией.
 def calculation_result(matrices_func):
+    # Цикл работает, пока результат операции не будет верным. То есть, если нам вернут None мы перезапустим цикл.
     while True:
+        # Проверка есть ли операция введённая пользователем.
         while True:
             operation = input("Введите желаемую операцию(вычитание, сложение, умножение, транспортирование): ").lower()
             if "вычитание" in operation or "сложение" in operation or "умножение" in operation or "транспортирование" in operation:
                 break
             print("Введена неизвестная операция! Попробуйте снова.\n")
 
-        matrix1 = input_matrix(matrices_func, 1)
+        matrix1 = input_matrix(matrices_func, 1)  # Запрашиваем у пользователя ввод 1 матрицы.
 
+        # Если пользователь выбрал "транспортирование", у него будем запрашивать ввод только 1 матрицы.
         if "транспортирование" in operation:
             result_operation = transposition_matrices(matrix1)
             if result_operation is None:
                 continue
             return result_operation
 
-        matrix2 = input_matrix(matrices_func, 2)
+        matrix2 = input_matrix(matrices_func, 2)  # Запрашиваем у пользователя ввод 2 матрицы.
 
+        # Проверяем выбранную операцию пользователем и в зависимости от этого выполняем вычисление.
         if "вычитание" in operation:
             result_operation = subtraction_matrices(matrix1, matrix2)
         elif "сложение" in operation:
@@ -129,14 +163,18 @@ def calculation_result(matrices_func):
         else:
             result_operation = multiplication_matrices(matrix1, matrix2)
 
+        # Если результат операции будет являться "None", то мы будем перезапускать цикл.
         if result_operation is None:
             continue
         return result_operation
 
 
-# основная часть кода
+# Основная часть кода
 kit_matrices = []
 while True:
     result = calculation_result(kit_matrices)
     kit_matrices.append(result)
+
+    print("Результат:")
     unpacking_matrix(result)
+    print()
